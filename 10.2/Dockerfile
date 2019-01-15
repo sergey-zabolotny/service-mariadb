@@ -73,7 +73,7 @@ RUN set -ex; \
         -DWITHOUT_MROONGA_STORAGE_ENGINE=YES \
     && make -j${CPU} \
     # Install
-    && make -j${CPU} install \
+    && make -j${CPU} install >/dev/null \
     # Clean everything
     && rm -rf /opt/src \
     && rm -rf /tmp/_ \
