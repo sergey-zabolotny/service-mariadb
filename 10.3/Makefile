@@ -1,35 +1,43 @@
 -include env_make
 
 VERSION ?= 10.3.12
-
+TAG ?= $(VERSION)
 REPO ?= zabolotny/mariadb
+
 NAME = docksal-mariadb-$(VERSION)
-IMAGE = $(REPO):$(VERSION)
+
 MYSQL_ROOT_PASSWORD = root
 MYSQL_USER = user
 MYSQL_PASSWORD = user
 MYSQL_DATABASE = default
+
 ENV = -e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) -e MYSQL_USER=$(MYSQL_USER) -e MYSQL_PASSWORD=$(MYSQL_PASSWORD) -e MYSQL_DATABASE=$(MYSQL_DATABASE) -e VERSION=$(VERSION)
+
+ifneq ($(STABILITY_TAG),)
+    ifneq ($(TAG),latest)
+        override TAG := $(TAG)-$(STABILITY_TAG)
+    endif
+endif
 
 .PHONY: build test push shell run start stop logs clean release
 
 build:
-	docker build -t $(IMAGE) --build-arg VERSION=$(VERSION) .
+	docker build -t $(REPO):$(TAG) --build-arg VERSION=$(VERSION) .
 
 test:
-	IMAGE=$(IMAGE) NAME=$(NAME) bats ../tests/test.bats
+	IMAGE=$(REPO):$(TAG) NAME=$(NAME) bats ../tests/test.bats
 
 push:
-	docker push $(IMAGE)
+	docker push $(REPO):$(TAG)
 
 shell:
-	docker run --rm --name $(NAME) -it $(PORTS) $(VOLUMES) $(ENV) $(IMAGE) /bin/bash
+	docker run --rm --name $(NAME) -it $(PORTS) $(VOLUMES) $(ENV) $(REPO):$(TAG) /bin/bash
 
 run:
-	docker run --rm --name $(NAME) -it $(PORTS) $(VOLUMES) $(ENV) $(IMAGE)
+	docker run --rm --name $(NAME) -it $(PORTS) $(VOLUMES) $(ENV) $(REPO):$(TAG)
 
 start: clean
-	docker run -d --name $(NAME) $(PORTS) $(VOLUMES) $(ENV) $(IMAGE)
+	docker run -d --name $(NAME) $(PORTS) $(VOLUMES) $(ENV) $(REPO):$(TAG)
 
 exec:
 	docker exec -it $(NAME) /bin/bash
