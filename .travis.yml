@@ -16,7 +16,7 @@ env:
 
 install:
   - cd ${VERSION%.*}
-  - travis_retry make
+  - travis_wait make
   - make test
 
 after_success:
