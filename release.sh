@@ -9,7 +9,7 @@ if [[ "${TRAVIS_PULL_REQUEST}" == "false" && ("${TRAVIS_BRANCH}" == "master"  ||
         export STABILITY_TAG="${TRAVIS_TAG}"
     fi
 
-    make release TAG="${VERSION}";
+    make release TAG="${VERSION}"
 
     IFS=',' read -ra tags <<< "${TAGS}"
 
