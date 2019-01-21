@@ -9,11 +9,8 @@ COPY mariadb-${VERSION}/default.cnf /etc/mysql/conf.d/10-default.cnf
 
 VOLUME /var/lib/mysql
 
-COPY docker-entrypoint.sh /entrypoint.sh
+COPY docker-entrypoint.d /docker-entrypoint.d
 COPY healthcheck.sh /opt/healthcheck.sh
-
-RUN chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
 
 EXPOSE 3306
 CMD ["mysqld"]
