@@ -1,6 +1,6 @@
 -include env_make
 
-VERSION ?= 10.2.21
+VERSION ?= 10.3
 TAG ?= $(VERSION)
 REPO ?= zabolotny/mariadb
 
@@ -25,7 +25,7 @@ build:
 	docker build -t $(REPO):$(TAG) --build-arg VERSION=$(VERSION) .
 
 test:
-	IMAGE=$(REPO):$(TAG) NAME=$(NAME) bats ../tests/test.bats
+	IMAGE=$(REPO):$(TAG) NAME=$(NAME) VERSION=$(VERSION) bats ./tests/test.bats
 
 push:
 	docker push $(REPO):$(TAG)

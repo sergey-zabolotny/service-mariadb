@@ -88,6 +88,6 @@ _healthcheck_wait ()
 	mysqlVars=$(make -s mysql-query QUERY='SHOW VARIABLES;')
 	# Compare with the expected values
 	# This will trigger a diff only when a variable from mysql-variables.txt is missing or modified in $mysqlVars
-	run bash -c "echo '$mysqlVars' | diff --changed-group-format='%<' --unchanged-group-format='' mysql-variables.txt -"
+	run bash -c "echo '$mysqlVars' | diff --changed-group-format='%<' --unchanged-group-format='' mariadb-${VERSION}/mysql-variables.txt -"
 	[[ "$output" == "" ]]
 }
