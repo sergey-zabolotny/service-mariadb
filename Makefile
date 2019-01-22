@@ -40,7 +40,8 @@ start: clean
 	docker run -d --name $(NAME) $(PORTS) $(VOLUMES) $(ENV) $(REPO):$(TAG)
 
 exec:
-	docker exec -it $(NAME) /bin/bash
+	docker exec $(NAME) /bin/bash -c "$(CMD)"
+#	docker exec -ti $(NAME) /bin/bash -c "$(CMD)"
 
 mysql-query:
 	# Usage: make mysql-query QUERY='SHOW DATABASES;'

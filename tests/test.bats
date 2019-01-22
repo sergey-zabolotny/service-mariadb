@@ -68,7 +68,7 @@ _healthcheck_wait ()
 	[[ $SKIP == 1 ]] && skip
 
 	### Setup ###
-	make start
+	make start -e VOLUMES="-v $(pwd)/tests:/var/www"
 	_healthcheck_wait
 
 }
@@ -90,4 +90,22 @@ _healthcheck_wait ()
 	# This will trigger a diff only when a variable from mysql-variables.txt is missing or modified in $mysqlVars
 	run bash -c "echo '$mysqlVars' | diff --changed-group-format='%<' --unchanged-group-format='' mariadb-${VERSION}/mysql-variables.txt -"
 	[[ "$output" == "" ]]
+}
+
+@test "Configuration overrides" {
+	[[ $SKIP == 1 ]] && skip
+
+	# Check the custom settings file is in place
+	run make exec CMD="cat /etc/mysql/conf.d/99-overrides.cnf"
+	[[ "$output" =~ "slow_query_log = ON" ]]
+	unset output
+
+	# Grab variables from the container
+	# -s used to suppress echoing of the actual make command
+	mysqlVars=$(make -s mysql-query QUERY='SHOW VARIABLES;')
+	# Compare with the expected values
+	# This will trigger a diff only when a variable from mysql-variables.txt is missing or modified in $mysqlVars
+	run bash -c "echo '$mysqlVars' | grep 'slow_query_log[[:blank:]]'"
+	[[ "$output" =~ "ON" ]]
+	unset output
 }
